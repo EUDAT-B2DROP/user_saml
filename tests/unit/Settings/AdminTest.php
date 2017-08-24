@@ -86,6 +86,15 @@ class AdminTest extends \Test\TestCase  {
 				'type' => 'line',
 				'required' => true,
 			],
+			'allow_local_accounts' => [
+                'text' => $this->l10n->t('Allow local account authentication if SAML authentication is used'),
+                'type' => 'checkbox',
+                'required' => true,
+            ],
+            'login_button_text' => [
+                'text' => $this->l10n->t('Text shown on the Alternative Logins Button.'),
+                'type' => 'line',
+            ],
 			'require_provisioned_account' => [
 				'text' => 'Only allow authentication if an account exists on some other backend. (e.g. LDAP)',
 				'type' => 'checkbox',

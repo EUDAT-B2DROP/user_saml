@@ -70,16 +70,30 @@ if($returnScript === true) {
 	return;
 }
 
+$shib_target = $urlGenerator->linkToRouteAbsolute('user_saml.SAML.login') .'?requesttoken='. urlencode(\OC::$server->getCsrfTokenManager()->getToken()->getEncryptedValue());
+$allow_local_accounts = $config->getAppValue('user_saml', 'general-allow_local_accounts', 'SAML');
 $redirectSituation = false;
+// Decides if the login page is displayed or requests get forwarded to the SAML login endpoint
+if($allow_local_accounts === '1')
+{
+	$loginButtonText = $config->getAppValue('user_saml', 'general-login_button_text', 'SAML');
+	if ($loginButtonText === '') {
+        $loginButtonText = 'SAML';
+	}
+	\OC_App::registerLogIn([
+        'href' => $shib_target,
+        'name' => $loginButtonText
+	]);
+} else {
 // All requests that are not authenticated and match against the "/login" route are
 // redirected to the SAML login endpoint
-if(!$cli &&
-	!$userSession->isLoggedIn() &&
-	\OC::$server->getRequest()->getPathInfo() === '/login' &&
-	$type !== '') {
-	$redirectSituation = true;
+	if(!$cli &&
+		!$userSession->isLoggedIn() &&
+		\OC::$server->getRequest()->getPathInfo() === '/login' &&
+		$type !== '') {
+		$redirectSituation = true;
+	}
 }
-
 // If a request to OCS or remote.php is sent by the official desktop clients it can
 // be intercepted as it supports SAML. All other clients don't yet and thus we
 // require the usage of application specific passwords there.
